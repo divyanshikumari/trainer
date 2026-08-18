@@ -1,5 +1,5 @@
 export const GOOGLE_FORM_URL = "GOOGLE_FORM_URL"
-export const ABOUT_VIDEO_URL = "/about-fitness.mp4"
+export const ABOUT_VIDEO_URL = "/about-latest.mp4"
 export const SECOND_VIDEO_URL = "/second-fitness.mp4"
 
 export const TRAINER_PHONE = "9334349698"
@@ -12,7 +12,7 @@ export const contact = {
   instagram: "@pmfitnesscoach",
   instagramHref: "https://www.instagram.com/pmfitnesscoach/",
   email: "businessmahto@gmail.com",
-  title: "Graduate Fitness Trainer",
+  title: "Certified Fitness Trainer",
   location: "Ramgarh, Jharkhand",
 }
 
