@@ -1,0 +1,31 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --radius-lg: 0.25rem;
+  --radius-md: 0.2rem;
+  --radius-sm: 0.15rem;
+  --font-sans: 'Arial', 'Helvetica Neue', sans-serif;
+}
+
+:root {
+  --background: #f5efe7;
+  --foreground: #24201d;
+  --border: rgba(36,32,29,.14);
+  --ring: #e85d2a;
+  --accent: #e85d2a;
+  --charcoal: #24201d;
+  --beige: #e9ded1;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--background); color: var(--foreground); font-family: Arial, 'Helvetica Neue', sans-serif; }
+::selection { background: #e85d2a; color: white; }
+:focus-visible { outline: 2px solid #e85d2a; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }
