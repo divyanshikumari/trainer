@@ -1,5 +1,5 @@
 export const GOOGLE_FORM_URL = "GOOGLE_FORM_URL"
-export const ABOUT_VIDEO_URL = "/about-latest.mp4"
+export const ABOUT_VIDEO_URL = "/hero-training-latest.mp4"
 export const SECOND_VIDEO_URL = "/second-fitness.mp4"
 
 export const TRAINER_PHONE = "9334349698"
@@ -24,7 +24,7 @@ export const images = {
   flex: "/trainer-profile.jpg",
 }
 
-export const trainerSlides = [images.hero, images.profile, images.strength, images.lift, images.flex]
+export const trainerSlides = [images.hero, images.profile, images.strength, images.lift]
 
 export const clientPlaceholders = [
   "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=900&q=85",
