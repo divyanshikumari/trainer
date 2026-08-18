@@ -1,6 +1,6 @@
 export const GOOGLE_FORM_URL = "GOOGLE_FORM_URL"
-// Local uploaded MP4 asset. Replace this path only if a new video is provided.
-export const ABOUT_VIDEO_URL = "/about-training.mp4"
+export const ABOUT_VIDEO_URL = "/about-fitness.mp4"
+export const SECOND_VIDEO_URL = "/second-fitness.mp4"
 
 export const contact = {
   phone: "9334349698",
@@ -14,11 +14,11 @@ export const contact = {
 }
 
 export const images = {
-  hero: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG-20260818-WA0048-ZZW1BWwmKv0DT3y1W7wdIbeH4ilQfW.jpg",
-  profile: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG-20260818-WA0059-OrcfysLye0refRThMheIjclNAZvwOj.jpg",
-  strength: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG-20260818-WA0041-qYT6mf9L4n3XxdTWjhu30xUbYTwdp9.jpg",
-  lift: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG-20260818-WA0057-xKsxCrY64XaUsP8eEEIw7z5xPC5u6X.jpg",
-  flex: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/IMG-20260818-WA0054-19AoDtJBAetfQUbl5gkDwxqjyzn1SH.jpg",
+  hero: "/trainer-hero.jpg",
+  profile: "/trainer-profile.jpg",
+  strength: "/trainer-flex.jpg",
+  lift: "/trainer-hero.jpg",
+  flex: "/trainer-profile.jpg",
 }
 
 export const trainerSlides = [images.hero, images.profile, images.strength, images.lift, images.flex]
