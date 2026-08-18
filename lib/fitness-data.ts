@@ -17,7 +17,7 @@ export const contact = {
 }
 
 export const images = {
-  hero: "/trainer-hero.jpg",
+  hero: "/trainer-hero-lift.jpg",
   profile: "/trainer-profile.jpg",
   strength: "/trainer-flex.jpg",
   lift: "/trainer-hero.jpg",
