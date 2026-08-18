@@ -33,7 +33,7 @@ export const clientPlaceholders = [
 ]
 
 export const services = [
-  ["01", "Personal Training", "One-to-one training customized to individual fitness goals."],
+  ["01", "Personal Training", "For Men & Women — personalized training customized to individual fitness goals."],
   ["02", "Fat Loss", "Structured workouts and nutrition guidance for sustainable fat loss."],
   ["03", "Muscle & Weight Gain", "Build strength and lean muscle with structured training."],
   ["04", "Strength Training", "Improve strength, endurance and overall performance."],
