@@ -2,10 +2,13 @@ export const GOOGLE_FORM_URL = "GOOGLE_FORM_URL"
 export const ABOUT_VIDEO_URL = "/about-fitness.mp4"
 export const SECOND_VIDEO_URL = "/second-fitness.mp4"
 
+export const TRAINER_PHONE = "9334349698"
+export const TRAINER_WHATSAPP = "919334349698"
+
 export const contact = {
-  phone: "9334349698",
-  phoneHref: "tel:+919334349698",
-  whatsappHref: "https://wa.me/919334349698?text=Hi%20Pappu,%20I%27d%20like%20to%20book%20a%20fitness%20session.",
+  phone: TRAINER_PHONE,
+  phoneHref: `tel:+91${TRAINER_PHONE}`,
+  whatsappHref: `https://wa.me/${TRAINER_WHATSAPP}?text=${encodeURIComponent("Hi Pappu, I would like to book a fitness training session.")}`,
   instagram: "@pmfitnesscoach",
   instagramHref: "https://www.instagram.com/pmfitnesscoach/",
   email: "businessmahto@gmail.com",
@@ -30,12 +33,12 @@ export const clientPlaceholders = [
 ]
 
 export const services = [
-  ["01", "Personal Training", "One-to-one coaching customized around your body, schedule and goals."],
-  ["02", "Fat Loss", "Sustainable fat-loss systems powered by smart training and nutrition."],
-  ["03", "Muscle & Weight Gain", "Build lean muscle with progressive, structured programming."],
-  ["04", "Strength Training", "Move better, lift stronger and build performance that lasts."],
-  ["05", "Diet & Nutrition", "Practical nutrition guidance that fits your real lifestyle."],
-  ["06", "Mobility & Stretching", "Improve range of motion and train with more confidence."],
+  ["01", "Personal Training", "One-to-one training customized to individual fitness goals."],
+  ["02", "Fat Loss", "Structured workouts and nutrition guidance for sustainable fat loss."],
+  ["03", "Muscle & Weight Gain", "Build strength and lean muscle with structured training."],
+  ["04", "Strength Training", "Improve strength, endurance and overall performance."],
+  ["05", "Diet & Nutrition", "Personalized nutrition guidance to support fitness goals."],
+  ["06", "Mobility & Stretching", "Improve flexibility, movement and recovery."],
 ]
 
 export const packages = [
