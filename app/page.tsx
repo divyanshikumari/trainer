@@ -14,7 +14,7 @@ function TrainerSlideshow() {
     const timer = window.setInterval(() => setActive((current) => (current + 1) % trainerSlides.length), 4200)
     return () => window.clearInterval(timer)
   }, [])
-  return <div className="relative mx-auto aspect-[4/5] w-full max-w-[520px] sm:aspect-[3/4] md:max-w-[560px] lg:aspect-auto lg:h-[min(520px,calc(100dvh-15rem))] lg:min-h-[420px] lg:w-full lg:max-w-[640px]">
+  return <div className="relative mx-auto aspect-[4/5] w-full max-w-[520px] sm:aspect-[3/4] md:max-w-[560px] lg:aspect-auto lg:h-[min(600px,calc(100dvh-10rem))] lg:min-h-[420px] lg:w-full lg:max-w-[640px]">
     <div className="absolute -inset-5 rounded-[2.5rem_0.75rem_2.5rem_0.75rem] bg-[#e85d2a]/10 blur-3xl" />
     {trainerSlides.map((src, index) => <img key={src} src={src} alt={`Pappu Kumar training photo ${index + 1}`} className={`absolute inset-0 h-full w-full rounded-[2.5rem_0.75rem_2.5rem_0.75rem] object-contain object-[50%_center] transition-all duration-1000 ${index === active ? 'opacity-100 scale-100' : 'opacity-0 scale-[1.03]'}`} />)}
     <div className="absolute inset-0 rounded-[2.5rem_0.75rem_2.5rem_0.75rem] bg-gradient-to-t from-[#171412]/90 via-transparent to-transparent" />
