@@ -9,6 +9,9 @@ const bookingSchema = z.object({
 })
 
 const esc = (value: unknown) => String(value ?? '').replace(/[<>]/g, '')
+const withTimeout = <T,>(promise: Promise<T>, ms: number) => Promise.race([promise, new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Email request timed out')), ms))])
+
+export const maxDuration = 15
 
 export async function POST(request: Request) {
   try {
@@ -27,8 +30,8 @@ export async function POST(request: Request) {
       console.warn('[v0] Booking saved but email is not configured. Add RESEND_API_KEY, TRAINER_EMAIL, and EMAIL_FROM.')
     } else {
       const [trainerEmail, clientEmail] = await Promise.allSettled([
-        resend.emails.send({ from, to: process.env.TRAINER_EMAIL, subject: 'New Session Booking Request – PM Fitness Coach', html: `<h2>New booking request</h2>${summary}<p>Booking ID: ${esc(bookingId)}</p>` }),
-        resend.emails.send({ from, to: data.email, subject: 'PM Fitness Coach – Booking Request Received', html: `<h2>Booking request received</h2><p>Hi ${esc(data.fullName)},</p><p>Thank you for choosing PM Fitness Coach. We have received your session booking request successfully.</p>${summary}<p>Pappu Kumar will contact you shortly to confirm the session.</p><p>Thank you,<br />PM Fitness Coach<br />Ramgarh, Jharkhand<br />9334349698</p>` }),
+        withTimeout(resend.emails.send({ from, to: process.env.TRAINER_EMAIL, subject: 'New Session Booking Request – PM Fitness Coach', html: `<h2>New booking request</h2>${summary}<p>Booking ID: ${esc(bookingId)}</p>` }), 5000),
+        withTimeout(resend.emails.send({ from, to: data.email, subject: 'PM Fitness Coach – Booking Request Received', html: `<h2>Booking request received</h2><p>Hi ${esc(data.fullName)},</p><p>Thank you for choosing PM Fitness Coach. We have received your session booking request successfully.</p>${summary}<p>Pappu Kumar will contact you shortly to confirm the session.</p><p>Thank you,<br />PM Fitness Coach<br />Ramgarh, Jharkhand<br />9334349698</p>` }), 5000),
       ])
       emailWarning = trainerEmail.status === 'rejected' || clientEmail.status === 'rejected'
       if (emailWarning) console.error('[v0] Booking saved but one or more emails failed.')
