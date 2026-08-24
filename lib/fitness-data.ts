@@ -42,9 +42,10 @@ export const services = [
 ]
 
 export const packages = [
-  { label: "01 PERSON", name: "Personal Training", price: "₹3,400", features: ["Gym Fees Included", "Personalized Workout Plan", "Diet & Nutrition Guidance", "Regular Progress Tracking", "Progress Guidance"] },
-  { label: "02 PERSON", name: "Partner Training", price: "₹4,100", featured: true, features: ["Gym Fees Included", "Personalized Workout Plan", "Diet & Nutrition Guidance", "Partner Training", "Progress Tracking"] },
-  { label: "20 SESSION", name: "Personal Training", price: "₹4,850", features: ["20 Personal Training Sessions", "Gym Fees Included", "Diet & Nutrition Guidance", "Strength, Fat Loss & Muscle Gain", "Mobility & Stretching"] },
+  { label: "20 SESSIONS", name: "Normal Training", price: "₹3,000", amount: 3000, features: ["20 Personal Training Sessions", "Personalized Workout Plan", "Diet & Nutrition Guidance", "Progress Tracking"] },
+  { label: "20 SESSIONS", name: "Advanced Personal Training", price: "₹3,800", amount: 3800, features: ["20 Personal Training Sessions", "Personalized Workout Plan", "Diet & Nutrition Guidance", "Strength, Fat Loss & Muscle Gain", "Mobility & Stretching"] },
+  { label: "PARTNER", name: "Partner Training", price: "₹4,600", amount: 4600, featured: true, features: ["Personalized Workout Plan", "Diet & Nutrition Guidance", "Partner Training", "Progress Tracking"] },
+  { label: "20 SESSIONS", name: "Online Personal Training", price: "₹3,400", amount: 3400, features: ["20 Online Personal Training Sessions", "Personalized Workout Plan", "Diet & Nutrition Guidance", "Weekly Progress Tracking", "Online Exercise Guidance & Trainer Support"] },
 ]
 
 export const testimonials = [
