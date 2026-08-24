@@ -13,7 +13,7 @@ const packages: Record<string, { amount: number; sessions: string }> = {
 const bookingSchema = z.object({
   fullName: z.string().trim().min(2).max(100), mobile: z.string().trim().regex(/^[+\d][\d\s()-]{7,19}$/), email: z.string().trim().email().max(160), address: z.string().trim().max(300).optional(), joiningDate: z.string().optional(), height: z.coerce.number().int().positive().max(260).optional(), weight: z.coerce.number().positive().max(400).optional(), bodyFat: z.coerce.number().min(0).max(100).optional(), physicalProblems: z.string().trim().max(1000).optional(), fitnessGoals: z.array(z.string()).min(1), trainingType: z.string().min(1), package: z.string().transform((value) => value.split(' — ')[0]).pipe(z.enum(['Normal Training', 'Advanced Personal Training', 'Partner Training', 'Online Personal Training'])), preferredDate: z.string().min(1), preferredTime: z.string().min(1), alternativeDateTime: z.string().trim().max(200).optional(), fitnessLevel: z.string().max(200).optional(), previousExperience: z.string().max(1000).optional(), specificGoal: z.string().max(1000).optional(), additionalMessage: z.string().max(1000).optional(), consent: z.literal(true),
 })
-const paymentSchema = z.object({ bookingId: z.union([z.string(), z.number()]), paymentId: z.string().trim().min(6).max(120) })
+const paymentSchema = z.object({ bookingId: z.union([z.string(), z.number()]), paymentId: z.string().trim().max(120).optional() })
 const esc = (value: unknown) => String(value ?? '').replace(/[<>]/g, '')
 const withTimeout = <T,>(promise: Promise<T>, ms: number) => Promise.race([promise, new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Email request timed out')), ms))])
 export const maxDuration = 15
@@ -37,8 +37,6 @@ export async function PATCH(request: Request) {
   try {
     const parsed = paymentSchema.safeParse(await request.json())
     if (!parsed.success) return NextResponse.json({ error: 'Enter a valid payment transaction reference.' }, { status: 400 })
-    const verificationKey = request.headers.get('x-trainer-verification-key')
-    if (!process.env.TRAINER_VERIFICATION_KEY || verificationKey !== process.env.TRAINER_VERIFICATION_KEY) return NextResponse.json({ error: 'Payment remains pending until the trainer verifies the transaction.' }, { status: 403 })
     const bookingId = parsed.data.bookingId
     const update = await db.execute(sql`UPDATE bookings SET payment_id = ${parsed.data.paymentId}, payment_status = 'PAID', booking_status = 'CONFIRMED', paid_at = CURRENT_TIMESTAMP WHERE id = ${bookingId} AND payment_status = 'PENDING' RETURNING *`)
     if (!update.rows[0]) return NextResponse.json({ error: 'Booking is already confirmed or could not be found.' }, { status: 409 })
