@@ -56,6 +56,18 @@ export async function PATCH(request: Request) {
   }
 }
 
+export async function sendPaymentVerificationEmails(booking: Record<string, unknown>) {
+  const resend = process.env.RESEND_API_KEY && process.env.TRAINER_EMAIL ? new Resend(process.env.RESEND_API_KEY) : null
+  if (!resend) return { emailWarning: true }
+  const from = process.env.EMAIL_FROM || 'PM Fitness Coach <onboarding@resend.dev>'
+  const summary = Object.entries(booking).map(([key, value]) => `<p><strong>${esc(key)}:</strong> ${esc(value)}</p>`).join('')
+  const [trainer, customer] = await Promise.allSettled([
+    withTimeout(resend.emails.send({ from, to: process.env.TRAINER_EMAIL, subject: `Payment verification required — Booking #${esc(booking.id)}`, html: `<h2>Customer reported payment</h2><p>Please verify the payment manually before confirming this booking.</p>${summary}` }), 5000),
+    withTimeout(resend.emails.send({ from, to: String(booking.email), subject: `PM Fitness Coach — Booking received`, html: `<h2>Your booking has been received</h2><p>Your payment report is awaiting manual verification. We will email you after Pappu confirms the payment.</p>${summary}` }), 5000),
+  ])
+  return { emailWarning: trainer.status === 'rejected' || customer.status === 'rejected' }
+}
+
 export async function sendConfirmationEmails(booking: Record<string, unknown>) {
   const resend = process.env.RESEND_API_KEY && process.env.TRAINER_EMAIL ? new Resend(process.env.RESEND_API_KEY) : null
   if (!resend) return { emailWarning: true }
