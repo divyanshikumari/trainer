@@ -13,13 +13,13 @@ const packages: Record<string, { amount: number; sessions: string[]; resultGuara
 const bookingSchema = z.object({
   fullName: z.string().trim().min(2).max(100), mobile: z.string().trim().regex(/^[+\d][\d\s()-]{7,19}$/), email: z.string().trim().email().max(160), address: z.string().trim().max(300).optional(), joiningDate: z.preprocess((value) => value === '' ? undefined : value, z.string().optional()), height: z.coerce.number().int().positive().max(260).optional(), weight: z.coerce.number().positive().max(400).optional(), bodyFat: z.coerce.number().min(0).max(100).optional(), physicalProblems: z.string().trim().max(1000).optional(), fitnessGoals: z.array(z.string()).min(1), trainingType: z.string().min(1), package: z.string().transform((value) => value.split(' — ')[0]).pipe(z.enum(['Normal Training', 'Advanced Personal Training', 'Partner Training', 'Online Personal Training'])), sessions: z.string().min(1), sessionStartingDate: z.string().min(1), preferredDate: z.string().min(1), preferredTime: z.string().min(1), alternativeDateTime: z.string().trim().max(200).optional(), fitnessLevel: z.string().max(200).optional(), previousExperience: z.string().max(1000).optional(), specificGoal: z.string().max(1000).optional(), additionalMessage: z.string().max(1000).optional(), consent: z.literal(true),
 })
-const paymentSchema = z.object({ bookingId: z.coerce.number().int().positive(), paymentId: z.string().trim().min(1).max(120) })
+const paymentSchema = z.object({ bookingId: z.string().trim().min(1).max(100), paymentId: z.string().trim().min(1).max(120) })
 const esc = (value: unknown) => String(value ?? '').replace(/[<>]/g, '')
 const withTimeout = <T,>(promise: Promise<T>, ms: number) => Promise.race([promise, new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Email request timed out')), ms))])
 const guaranteeText = '₹2,000 Result Guarantee – If no results are achieved under the applicable terms, ₹2,000 will be refunded.'
 export const maxDuration = 15
 
-function paymentDetails(bookingId: number, amount: number) {
+function paymentDetails(bookingId: string, amount: number) {
   const upiId = process.env.UPI_ID || 'pappusgnps-1@oksbi'
   const payee = 'Pappu Kumar'
   const reference = `PMFIT-${bookingId}`
@@ -35,7 +35,8 @@ export async function POST(request: Request) {
     const pricing = packages[data.package]
     if (!pricing.sessions.includes(data.sessions)) return NextResponse.json({ error: 'That session option is not available for this package.' }, { status: 400 })
     const result = await db.execute(sql`INSERT INTO bookings (full_name, mobile, email, address, joining_date, height, weight, body_fat, physical_problems, fitness_goals, training_type, package, sessions, session_starting_date, result_guarantee, preferred_date, preferred_time, alternative_date_time, fitness_level, previous_experience, specific_goal, additional_message, consent, amount, payment_status, booking_status) VALUES (${data.fullName}, ${data.mobile}, ${data.email}, ${data.address || null}, ${data.joiningDate || null}, ${data.height || null}, ${data.weight || null}, ${data.bodyFat || null}, ${data.physicalProblems || null}, ${sql`ARRAY[${sql.join(data.fitnessGoals.map((goal) => sql`${goal}`), sql`, `)}]::text[]`}, ${data.trainingType}, ${data.package}, ${data.sessions}, ${data.sessionStartingDate}, ${pricing.resultGuarantee}, ${data.preferredDate}, ${data.preferredTime}, ${data.alternativeDateTime || null}, ${data.fitnessLevel || null}, ${data.previousExperience || null}, ${data.specificGoal || null}, ${data.additionalMessage || null}, ${data.consent}, ${pricing.amount}, 'PENDING', 'PENDING') RETURNING id`)
-    const bookingId = Number(result.rows[0]?.id)
+    const bookingId = String(result.rows[0]?.id || '')
+    if (!bookingId) return NextResponse.json({ error: 'Booking was saved but no Booking ID was returned. Please try again.' }, { status: 500 })
     return NextResponse.json({ success: true, bookingId, package: data.package, amount: pricing.amount, sessions: data.sessions, sessionStartingDate: data.sessionStartingDate, paymentStatus: 'PENDING', bookingStatus: 'PENDING', resultGuarantee: pricing.resultGuarantee, refundPolicy: pricing.resultGuarantee ? guaranteeText : null, ...paymentDetails(bookingId, pricing.amount) })
   } catch (error) {
     console.error('[v0] Booking creation failed:', error)
