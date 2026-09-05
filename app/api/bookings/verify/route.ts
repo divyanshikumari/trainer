@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const result = await db.execute(sql`UPDATE bookings SET payment_status = 'PAID', booking_status = 'CONFIRMED', paid_at = COALESCE(paid_at, CURRENT_TIMESTAMP) WHERE id = ${bookingId} AND payment_status IN ('PENDING', 'PAYMENT_REPORTED') AND booking_status = 'PENDING' RETURNING *`)
     if (!result.rows[0]) return NextResponse.json({ error: 'Booking not found, already confirmed, or payment has not been reported.' }, { status: 409 })
     const emailResult = await sendConfirmationEmails(result.rows[0] as Record<string, unknown>)
-    return NextResponse.json({ success: true, paymentStatus: 'PAID', bookingStatus: 'CONFIRMED', emailWarning: emailResult.emailWarning })
+    return NextResponse.json({ success: true, paymentStatus: 'PAID', bookingStatus: 'CONFIRMED', emailWarning: emailResult.emailWarning, trainerRecipient: emailResult.trainerRecipient })
   } catch (error) {
     console.error('[v0] Trainer booking verification failed:', error)
     return NextResponse.json({ error: 'Booking verification could not be completed.' }, { status: 500 })

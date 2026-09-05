@@ -17,5 +17,5 @@ export async function POST(request: Request) {
   const result = await db.execute(sql`UPDATE bookings SET payment_status = ${paymentStatus} WHERE id = ${bookingId} AND booking_status = 'PENDING' RETURNING *`)
   if (!result.rows[0]) return NextResponse.json({ error: 'Booking was not found or is already processed.' }, { status: 404 })
   const emailResult = status === 'paid' ? await sendPaymentVerificationEmails(result.rows[0] as Record<string, unknown>) : { emailWarning: false }
-  return NextResponse.json({ ok: true, paymentStatus, emailWarning: emailResult.emailWarning })
+  return NextResponse.json({ ok: true, paymentStatus, emailWarning: emailResult.emailWarning, trainerRecipient: emailResult.trainerRecipient })
 }
