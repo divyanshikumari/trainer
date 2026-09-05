@@ -5,7 +5,7 @@ import { sql } from 'drizzle-orm'
 import { sendPaymentVerificationEmails } from '@/app/api/bookings/route'
 
 const schema = z.object({
-  bookingId: z.coerce.number().int().positive(),
+  bookingId: z.string().trim().uuid(),
   status: z.enum(['paid', 'not_paid']),
 })
 
