@@ -2,7 +2,7 @@
 
 import emailjs from '@emailjs/browser'
 
-const serviceId = 'service_538puve'
+const serviceId = 'service_iby5wr'
 const trainerTemplateId = 'template_8igy2xb'
 const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
 
