@@ -4,7 +4,6 @@ import emailjs from '@emailjs/browser'
 
 const serviceId = 'service_538puve'
 const trainerTemplateId = 'template_8igy2xb'
-const customerTemplateId = 'template_uihh5gu'
 const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
 
 export type BookingEmail = {
@@ -32,9 +31,10 @@ function variables(booking: BookingEmail, adminPanelLink: string) {
     booking_date: booking.preferred_date || '',
     booking_time: booking.preferred_time || '',
     utr_number: booking.payment_id || 'Not provided',
-    payment_status: booking.payment_status === 'PAID' ? 'Payment Verified' : 'Pending Verification',
+    payment_status: booking.payment_status === 'CONFIRMED' || booking.payment_status === 'PAID' ? 'Confirmed' : 'Pending Verification',
     status: booking.booking_status === 'CONFIRMED' ? 'Confirmed' : booking.booking_status === 'REJECTED' ? 'Rejected' : 'Pending',
     admin_panel_link: adminPanelLink,
+    verification_instruction: 'Please manually verify the payment using the UTR/payment reference in your bank/UPI before confirming this booking.',
   }
 }
 
@@ -45,8 +45,4 @@ async function send(templateId: string, params: Record<string, string>) {
 
 export function sendTrainerBookingEmail(booking: BookingEmail) {
   return send(trainerTemplateId, variables(booking, `${window.location.origin}/admin`))
-}
-
-export function sendCustomerConfirmationEmail(booking: BookingEmail) {
-  return send(customerTemplateId, variables(booking, ''))
 }
