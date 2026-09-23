@@ -34,13 +34,26 @@ function variables(booking: BookingEmail, adminPanelLink: string) {
     payment_status: booking.payment_status === 'CONFIRMED' || booking.payment_status === 'PAID' ? 'Confirmed' : 'Pending Verification',
     status: booking.booking_status === 'CONFIRMED' ? 'Confirmed' : booking.booking_status === 'REJECTED' ? 'Rejected' : 'Pending',
     admin_panel_link: adminPanelLink,
-    verification_instruction: 'Please manually verify the payment using the UTR/payment reference in your bank/UPI before confirming this booking.',
   }
 }
 
 async function send(templateId: string, params: Record<string, string>) {
-  if (!publicKey) throw new Error('EmailJS public key is not configured. Add NEXT_PUBLIC_EMAILJS_PUBLIC_KEY.')
-  return emailjs.send(serviceId, templateId, params, { publicKey })
+  if (!publicKey) {
+    const error = new Error('EmailJS public key is not configured at runtime. NEXT_PUBLIC_EMAILJS_PUBLIC_KEY is missing from the deployed client bundle.')
+    console.error('[v0] EmailJS configuration error', { serviceId, templateId, hasPublicKey: false })
+    throw error
+  }
+
+  try {
+    return await emailjs.send(serviceId, templateId, params, publicKey)
+  } catch (error) {
+    const details = error && typeof error === 'object'
+      ? { status: 'status' in error ? error.status : undefined, text: 'text' in error ? error.text : undefined, message: 'message' in error ? error.message : undefined }
+      : { message: String(error) }
+    console.error('[v0] EmailJS trainer send failed', { serviceId, templateId, hasPublicKey: true, parameterKeys: Object.keys(params), utrPresent: Boolean(params.utr_number && params.utr_number !== 'Not provided'), ...details })
+    const message = [details.status && `status ${details.status}`, details.text || details.message].filter(Boolean).join(': ')
+    throw new Error(`EmailJS trainer notification failed${message ? ` (${message})` : ''}`)
+  }
 }
 
 export function sendTrainerBookingEmail(booking: BookingEmail) {
