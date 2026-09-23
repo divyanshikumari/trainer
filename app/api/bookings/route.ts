@@ -55,11 +55,3 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: 'Payment reference could not be saved.' }, { status: 500 })
   }
 }
-
-export async function sendPaymentVerificationEmails(_booking: Record<string, unknown>) {
-  return { emailWarning: false }
-}
-
-export async function sendConfirmationEmails(_booking: Record<string, unknown>) {
-  return { emailWarning: false }
-}
