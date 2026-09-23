@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { Resend } from 'resend'
 import { db } from '@/lib/db'
 import { sql } from 'drizzle-orm'
 
@@ -16,10 +15,7 @@ const bookingSchema = z.object({
   fullName: z.string().trim().min(2).max(100), mobile: z.string().trim().regex(/^[+\d][\d\s()-]{7,19}$/), email: z.string().trim().email().max(160), address: z.string().trim().max(300).optional(), joiningDate: z.preprocess((value) => value === '' ? undefined : value, z.string().optional()), height: optionalNumber(z.coerce.number().int().positive().max(260)), weight: optionalNumber(z.coerce.number().positive().max(400)), bodyFat: optionalNumber(z.coerce.number().min(0).max(100)), physicalProblems: optionalText, fitnessGoals: z.array(z.string()).min(1), trainingType: z.string().min(1), package: z.string().transform((value) => value.split(' — ')[0]).pipe(z.enum(['Normal Training', 'Advanced Personal Training', 'Partner Training', 'Online Personal Training'])), sessions: z.string().min(1), sessionStartingDate: z.string().min(1), preferredDate: z.string().min(1), preferredTime: z.string().min(1), alternativeDateTime: z.string().trim().max(200).optional(), fitnessLevel: z.string().max(200).optional(), previousExperience: z.string().max(1000).optional(), specificGoal: z.string().max(1000).optional(), additionalMessage: z.string().max(1000).optional(), consent: z.literal(true),
 })
 const paymentSchema = z.object({ bookingId: z.string().trim().min(1).max(100), paymentId: z.string().trim().min(1).max(120) })
-const esc = (value: unknown) => String(value ?? '').replace(/[<>]/g, '')
-const withTimeout = <T,>(promise: Promise<T>, ms: number) => Promise.race([promise, new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Email request timed out')), ms))])
 const guaranteeText = '₹2,000 Result Guarantee – If no results are achieved under the applicable terms, ₹2,000 will be refunded.'
-const trainerEmail = process.env.TRAINER_EMAIL?.trim() || 'businessmahto@gmail.com'
 export const maxDuration = 15
 
 function paymentDetails(bookingId: string, amount: number) {
@@ -60,33 +56,10 @@ export async function PATCH(request: Request) {
   }
 }
 
-export async function sendPaymentVerificationEmails(booking: Record<string, unknown>) {
-  const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
-  if (!resend) return { emailWarning: true }
-  const from = process.env.EMAIL_FROM || 'PM Fitness Coach <onboarding@resend.dev>'
-  const summary = Object.entries(booking).map(([key, value]) => `<p><strong>${esc(key)}:</strong> ${esc(value)}</p>`).join('')
-  const [trainer, customer] = await Promise.allSettled([
-    withTimeout(resend.emails.send({ from, to: trainerEmail, subject: `Payment verification required — Booking #${esc(booking.id)}`, html: `<h2>Customer reported payment</h2><p>Please verify the payment manually before confirming this booking.</p>${summary}` }), 5000),
-    withTimeout(resend.emails.send({ from, to: String(booking.email), subject: `PM Fitness Coach — Booking received`, html: `<h2>Your booking has been received</h2><p>Your payment report is awaiting manual verification. We will email you after Pappu confirms the payment.</p>${summary}` }), 5000),
-  ])
-  const trainerError = trainer.status === 'rejected' ? trainer.reason : trainer.value?.error
-  const customerError = customer.status === 'rejected' ? customer.reason : customer.value?.error
-  if (trainerError || customerError) console.error('[v0] Booking notification email failed', { bookingId: booking.id, trainerRecipient: trainerEmail, trainerError, customerError })
-  return { emailWarning: Boolean(trainerError || customerError), trainerRecipient: trainerEmail }
+export async function sendPaymentVerificationEmails(_booking: Record<string, unknown>) {
+  return { emailWarning: false }
 }
 
-export async function sendConfirmationEmails(booking: Record<string, unknown>) {
-  const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
-  if (!resend) return { emailWarning: true }
-  const from = process.env.EMAIL_FROM || 'PM Fitness Coach <onboarding@resend.dev>'
-  const summary = Object.entries(booking).map(([key, value]) => `<p><strong>${esc(key)}:</strong> ${esc(value)}</p>`).join('')
-  const [trainer, customer] = await Promise.allSettled([
-    withTimeout(resend.emails.send({ from, to: trainerEmail, subject: `New Session Booking Confirmed — ${esc(booking.full_name)}`, html: `<h2>Payment Status: PAID</h2><h2>Booking Status: CONFIRMED</h2>${summary}` }), 5000),
-    withTimeout(resend.emails.send({ from, to: String(booking.email), subject: 'PM Fitness Coach — Session Confirmed', html: `<h2>Your payment details have been submitted and your session has been confirmed.</h2>${summary}` }), 5000),
-  ])
-  const trainerError = trainer.status === 'rejected' ? trainer.reason : trainer.value?.error
-  const customerError = customer.status === 'rejected' ? customer.reason : customer.value?.error
-  const emailWarning = Boolean(trainerError || customerError)
-  if (emailWarning) console.error('[v0] Confirmed booking email failed', { bookingId: booking.id, trainerRecipient: trainerEmail, trainerError, customerError })
-  return { emailWarning, trainerRecipient: trainerEmail }
+export async function sendConfirmationEmails(_booking: Record<string, unknown>) {
+  return { emailWarning: false }
 }
