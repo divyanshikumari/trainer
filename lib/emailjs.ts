@@ -44,8 +44,13 @@ async function send(templateId: string, params: Record<string, string>) {
     throw error
   }
 
+  const diagnostic = { serviceId, templateId, hasPublicKey: Boolean(publicKey), parameterNames: Object.keys(params), utrPresent: Boolean(params.utr_number && params.utr_number !== 'Not provided') }
+  console.info('[v0] EmailJS trainer send starting', diagnostic)
+
   try {
-    return await emailjs.send(serviceId, templateId, params, publicKey)
+    const response = await emailjs.send(serviceId, templateId, params, publicKey)
+    console.info('[v0] EmailJS trainer send response', { ...diagnostic, status: response.status, text: response.text })
+    return response
   } catch (error) {
     const details = error && typeof error === 'object'
       ? { status: 'status' in error ? error.status : undefined, text: 'text' in error ? error.text : undefined, message: 'message' in error ? error.message : undefined }
